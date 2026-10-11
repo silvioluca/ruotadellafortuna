@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ruota della Fortuna</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="screen-splash" class="screen active">
+  <div class="splash-inner">
+    <img src="images/logo.png" alt="La Ruota della Fortuna" class="splash-logo">
+    <button class="btn-primary btn-huge pulse" id="btn-start">INIZIA IL GIOCO</button>
+  </div>
+</div>
+
+<!-- PLAYERS -->
+<div id="screen-players" class="screen">
+  <div class="screen-inner">
+    <h2 class="screen-title">CHI GIOCA?</h2>
+    <div id="players-list"></div>
+    <button class="btn-secondary" id="btn-add-player">+ Aggiungi Giocatore</button>
+    <p class="error-msg" id="players-error"></p>
+    <button class="btn-primary btn-huge" id="btn-play">GIOCHIAMO</button>
+  </div>
+</div>
+
+<!-- ROUND INTRO -->
+<div id="screen-round-intro" class="screen">
+  <div class="round-intro-inner">
+    <div class="intro-round-label" id="intro-num">ROUND 1</div>
+    <div class="intro-round-name" id="intro-name">GIRAMONDO</div>
+    <div class="intro-round-type" id="intro-type">⚡ Round Veloce</div>
+    <div class="intro-round-desc" id="intro-desc"></div>
+    <button class="btn-primary btn-huge" id="btn-start-round">INIZIA</button>
+  </div>
+</div>
+
+<!-- GAME -->
+<div id="screen-game" class="screen">
+  <div class="game-layout">
+
+    <div class="game-header">
+      <div class="turn-top">
+        Turno di <strong id="turn-player">-</strong>
+        <div class="turn-score-label">In gioco: <span id="turn-score">0 €</span></div>
+      </div>
+      <div class="round-pills">
+        <div class="round-pill" id="round-pill">Round 1</div>
+        <div class="jackpot-pill" id="jackpot-pill" style="display:none">
+          <span id="jackpot-icon">🐷</span> <span id="jackpot-val">0 €</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="scoreboard" id="scoreboard"></div>
+
+    <div class="puzzle-zone">
+      <div class="puzzle-board" id="puzzle-board"></div>
+    </div>
+
+    <div class="theme-strip" id="theme-strip">
+      <span id="theme-label"></span>
+    </div>
+
+    <div class="express-banner" id="express-banner" style="display:none">
+      ⚡ EXPRESS — Consonanti +500€ &nbsp;|&nbsp; Vocali −500€ &nbsp;|&nbsp; Errore = BANCAROTTA
+    </div>
+    <div class="gerry-banner" id="gerry-banner" style="display:none">
+      🎡 GIRO GERRY — Valore fisso consonanti: <strong id="gerry-val">0 €</strong> &nbsp;|&nbsp; Vocali gratis
+    </div>
+
+    <div class="game-main">
+
+      <div class="action-col">
+        <div class="alphabet-grid" id="alphabet-grid"></div>
+        <div class="exhausted-notice" id="exhausted-notice" style="display:none"></div>
+
+        <div class="action-btns" id="action-btns">
+          <button class="btn-action" id="btn-buy-vowel" disabled>COMPRO UNA VOCALE</button>
+          <button class="btn-action btn-solve" id="btn-solve">DO LA SOLUZIONE</button>
+        </div>
+
+        <div class="solve-panel" id="solve-panel" style="display:none">
+          <input type="text" id="solve-input" placeholder="Digita la soluzione..." autocomplete="off" spellcheck="false">
+          <div class="solve-btns">
+            <button class="btn-primary" id="btn-confirm-solve">✓ CONFERMA</button>
+            <button class="btn-secondary" id="btn-cancel-solve">✗ Annulla</button>
+          </div>
+        </div>
+
+        <div class="quick-panel" id="quick-panel" style="display:none">
+          <p class="quick-hint" id="quick-hint">Chi indovina la frase vince 1.000€!</p>
+          <input type="text" id="quick-input" placeholder="La risposta è..." autocomplete="off" spellcheck="false">
+          <button class="btn-primary" id="btn-quick-solve">DO LA SOLUZIONE</button>
+        </div>
+
+        <!-- GiraMondo panel -->
+        <div class="giramondo-panel" id="giramondo-panel" style="display:none">
+
+          <div id="gm-buzz-area">
+            <p class="gm-hint">Le lettere compaiono una alla volta…<br>clicca quando conosci la risposta!</p>
+            <button class="btn-buzz" id="btn-buzz">DO LA SOLUZIONE</button>
+          </div>
+
+          <div id="gm-select-area" style="display:none">
+            <p class="gm-hint">Chi vuole rispondere?</p>
+            <div class="gm-player-btns" id="gm-player-btns"></div>
+          </div>
+
+          <div id="gm-answer-area" style="display:none">
+            <p class="gm-hint" id="gm-answering-label">Risponde: —</p>
+            <input type="text" id="giramondo-input" placeholder="Scrivi la frase…" autocomplete="off" spellcheck="false">
+            <button class="btn-primary" id="btn-giramondo-confirm">✓ CONFERMO</button>
+          </div>
+
+        </div>
+
+        <div class="bonus-select-panel" id="bonus-select-panel" style="display:none">
+          <p class="bonus-instructions">Scegli <strong>4 consonanti</strong> e <strong>1 vocale</strong> (<span id="bonus-count">0/5</span>)</p>
+          <button class="btn-primary" id="btn-bonus-confirm" disabled>CONFERMO</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="timer-wrap" id="timer-wrap" style="display:none">
+      <div class="timer-bar"><div class="timer-fill" id="timer-fill"></div></div>
+      <span class="timer-text" id="timer-text">15</span>
+    </div>
+
+    <div class="wheel-section" id="wheel-section">
+      <div class="wheel-result-display" id="wheel-result-display"></div>
+      <button class="btn-gerry" id="btn-gerry" style="display:none">🎡 GIRO GERRY</button>
+      <div class="wheel-area">
+        <div class="wheel-pointer-top">▼</div>
+        <canvas id="wheel-canvas" width="460" height="460"></canvas>
+      </div>
+      <button id="btn-spin" style="display:none" disabled></button>
+    </div>
+
+  </div>
+</div>
+
+<!-- END -->
+<div id="screen-end" class="screen">
+  <div class="end-inner">
+    <div class="crown-anim">🏆</div>
+    <h2 class="end-title">CAMPIONE!</h2>
+    <div class="winner-name" id="winner-name">-</div>
+    <div class="winner-prize" id="winner-prize">0 €</div>
+    <div class="end-scores" id="end-scores"></div>
+    <button class="btn-primary btn-huge" id="btn-restart">NUOVA PARTITA</button>
+  </div>
+</div>
+
+<!-- FINAL GAME: Ruota delle Meraviglie -->
+<div id="screen-final" class="screen">
+  <div class="final-layout">
+
+    <!-- Phase A: wheel spin -->
+    <div id="final-wheel-phase">
+      <div class="mera-title">RUOTA DELLE MERAVIGLIE</div>
+      <div class="mera-winner-tag" id="mera-winner-tag"></div>
+      <div class="mera-wheel-wrap">
+        <canvas id="mera-canvas" width="400" height="400"></canvas>
+      </div>
+      <div class="mera-hint-line" id="mera-hint-line">Clicca la ruota per girare!</div>
+      <div id="mera-ready-area" style="display:none">
+        <p class="mera-sub" id="mera-ready-text"></p>
+        <button class="btn-primary btn-huge" id="btn-mera-go">INIZIA I TABELLONI</button>
+      </div>
+    </div>
+
+    <!-- Phase B: 3 boards -->
+    <div id="final-boards-phase" style="display:none">
+      <div class="fp-header">
+        <div class="fp-board-label" id="fp-board-label">Tabellone 1</div>
+        <button class="btn-fp-pause" id="fp-btn-pause" style="display:none">⏸</button>
+        <div class="fp-prize-tag">🎁 <strong>3 premi nascosti</strong></div>
+      </div>
+      <p class="fp-instructions" id="fp-instructions"></p>
+      <div class="puzzle-zone">
+        <div class="puzzle-board" id="fp-puzzle-board" style="--tile-bg:#7a5800;--tile-bd:#4a3400;--glow-bg:#1565C0;--glow-bd:#1E88E5"></div>
+      </div>
+      <div class="theme-strip" id="fp-theme-strip" style="display:none">
+        <span id="fp-theme-label"></span>
+      </div>
+      <div class="alphabet-grid" id="fp-alpha-grid"></div>
+      <div class="fp-selected-letters" id="fp-selected-letters" style="display:none"></div>
+      <button class="btn-primary" id="fp-btn-confirm-letters" style="display:none">CONFERMO LE LETTERE</button>
+      <div class="fp-action-btns" id="fp-action-btns" style="display:none">
+        <button class="btn-primary" id="fp-btn-open-solve">DO LA SOLUZIONE</button>
+        <button class="btn-secondary" id="fp-btn-pass">⏭ Passa</button>
+      </div>
+      <div class="fp-solve-wrap" id="fp-solve-wrap" style="display:none">
+        <input type="text" id="fp-solve-input" placeholder="Tenta la soluzione…" autocomplete="off" spellcheck="false">
+        <button class="btn-primary" id="fp-btn-solve">✓ CONFERMA</button>
+      </div>
+    </div>
+
+    <!-- Phase C: envelope picking (post-game) -->
+    <div id="final-envelope-phase" style="display:none">
+      <div class="mera-title" id="fp-env-title">SCEGLI LA TUA BUSTA!</div>
+      <p class="mera-sub" id="fp-env-subtitle"></p>
+      <div class="mera-envelopes" id="fp-envelopes"></div>
+      <button class="btn-primary btn-huge" id="fp-btn-env-confirm" disabled style="margin-top:14px">✓ PRENDO QUESTA BUSTA!</button>
+      <div id="fp-env-prize-box" style="display:none">
+        <div class="mera-prize-amount" id="fp-env-prize-amount"></div>
+        <button class="btn-primary btn-huge" id="fp-btn-env-ok">FANTASTICO</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Timer overlay – fixed top-right during final game -->
+<div id="fp-timer-display" class="fp-timer-display" style="display:none">60</div>
+
+<!-- SKIP ROUND -->
+<button id="btn-skip-round" title="Salta round">⏭</button>
+
+<!-- OVERLAY / MODAL -->
+<div class="overlay" id="overlay" style="display:none">
+  <div class="modal" id="modal">
+    <div class="modal-emoji" id="modal-emoji"></div>
+    <div class="modal-title" id="modal-title"></div>
+    <div class="modal-body" id="modal-body"></div>
+    <button class="btn-primary" id="modal-ok">OK</button>
+  </div>
+</div>
+
+<script src="puzzles.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
